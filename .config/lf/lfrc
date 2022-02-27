@@ -1,0 +1,171 @@
+set shell bash
+set drawbox
+set icons true
+set hidden true
+set ignorecase true
+
+
+#commands
+
+cmd open &$OPENER "$f"
+cmd execute &bash $f
+
+cmd yank-path $printf '%s' "$fx" | xclip -i -selection clipboard
+
+cmd yank-dirname $dirname -- "$f" | head -c-1 | xclip -i -selection clipboard
+
+
+#dragon
+cmd dragon %dragon-drag-and-drop -a -x $fx
+cmd dragon-stay %dragon-drag-and-drop -a $fx
+cmd dragon-individual %dragon-drag-and-drop $fx
+
+
+
+cmd dldragon ${{
+  
+url=$(dragon-drag-and-drop -t -x)
+
+if [ -n "$url" ]; then
+  printf "File Name: "
+  name=""
+  while [ -z $name ] || [ -e $name ]
+  do
+    read -r name
+    if [ -e "$name" ]; then
+      printf "File already exists, overwrite (y|n): "
+      read -r ans
+
+      if [ "$ans" = "y" ]; then
+        break
+      else
+        printf "File Name: "
+      fi
+    fi
+  done
+
+  # Download the file with curl
+  [ -n "$name" ] && curl -o "$name" "$url" || exit 1
+else
+  exit 1
+fi
+}}
+
+
+cmd send-as-mail ${{
+  mailspring $f 
+}}
+
+cmd mkfile ${{
+  printf "File Name: "
+  read ans
+  $EDITOR $ans
+}}
+
+cmd chmod ${{
+  printf "Mode Bits: "
+  read ans
+
+  for file in "$fx"
+  do
+    chmod $ans $file
+  done
+
+  lf -remote 'send reload'
+}}
+
+cmd mkdir ${{
+  printf "Directory Name: "
+  read ans
+  mkdir $ans
+}}
+
+cmd select-files ${{
+    { echo "$fs"; find -L "$(pwd)" -mindepth 1 -maxdepth 1 -type f; } |
+        if [ "$lf_hidden" = "false" ]; then
+          # remove any hidden files so you only select files you can see.
+          grep -v '/\.[^/]\+$'
+        else
+          cat
+        fi |
+        sed '/^$/d' | sort | uniq -u |
+        xargs -d '\n' -r -I{} lf -remote "send $id toggle {}"
+}}
+
+cmd select-dirs ${{
+    { echo "$fs"; find -L "$(pwd)" -mindepth 1 -maxdepth 1 -type d; } |
+        if [ "$lf_hidden" = "false" ]; then
+          grep -v '/\.[^/]\+$'
+        else
+          cat
+        fi |
+        sed '/^$/d' | sort | uniq -u |
+        xargs -d '\n' -r -I{} lf -remote "send $id toggle {}"
+}}
+
+cmd newfold ${{
+    set -f
+    read newd
+    mkdir -- "$newd"
+    mv -- $fx "$newd"
+}}
+
+cmd unarchive ${{
+  case "$f" in
+      *.zip) peazip -ext2folder "$f" ;;
+      *.tar.gz) tar -xzvf "$f" ;;
+      *.tar.bz2) tar -xjvf "$f" ;;
+      *.tar) tar -xvf "$f" ;;
+      *) echo "Unsupported format" ;;
+  esac
+}}
+
+
+#remove some defaults
+
+map m
+map o
+map n
+map d
+map c
+map e
+map y
+
+
+#map keys
+
+map . set hidden!
+map au unarchive
+
+#dragon
+
+map dr dragon
+map ds dragon-stay
+map di dragon-individual
+map dl dldragon
+
+map sm send-as-mail
+map yf select-files
+map yd select-dirs
+map yp yank-path
+map yd yank-dirname
+map mf mkfile
+map md mkdir
+map ms newfold
+map l open
+map dd delete
+map ch chmod
+map r rename
+map x cut
+map p paste
+map u unselect
+map <enter> execute
+
+map <c-z> $ kill -STOP $PPID
+
+# Navigation
+map gk cd ~/kDrive/
+map gp cd ~/kDrive/projects
+map gd cd ~/Downloads
+map gc cd ~/.config
+map gar cd ~/kDrive/areas
