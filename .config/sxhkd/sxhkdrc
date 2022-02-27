@@ -1,0 +1,51 @@
+#open programs
+alt+{t,z,r,s,q,a}
+	{zettlr, zotero, rstudio-bin, subl, mailspring, signal-desktop}
+#editors
+alt + e
+    vscodium
+
+alt + shift + e
+    alacritty -e nvim
+
+# open links
+alt + {m, l, w}
+		brave {https://moodle-app2.let.ethz.ch/my/, https://www.leo.org/german-english, https://www.duden.de/}
+
+#open obsidian
+alt + o
+	obsidian
+#shutdown
+super + shift + p
+	shutdown -h now
+
+#reboot
+super + shift + b
+	reboot
+
+#file managers
+super+shift+o
+	pcmanfm
+	
+super+o
+	alacritty -e lf
+
+#terminal
+super+enter
+    alacritty
+
+#browser
+super+shift+Return
+	brave
+
+#screenshots
+Print
+	flameshot gui
+
+#only thinkpad screen
+alt+ shift + m
+	xrandr --output eDP1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP1 --off --output DP2 --off --output HDMI1 --off --output HDMI2 --off --output VIRTUAL1 --off &
+
+#big monitor
+alt+ shift + n
+	xrandr --output eDP1 --off --output DP-1 --primary --mode 3840x2160 --scale 0.7x0.7 --pos 0x0 --rotate normal --output DP2 --off --output HDMI1 --off --output HDMI2 --off --output VIRTUAL1 --off &
