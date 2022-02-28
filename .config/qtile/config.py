@@ -31,7 +31,7 @@ import socket
 import subprocess
 from typing import List  # noqa: F401
 from libqtile import layout, bar, widget, hook, qtile
-from libqtile.config import Click, Drag, Group, Key, Match, Screen, Rule
+from libqtile.config import (Click, Drag, Group, Key, Match, Screen, Rule, ScratchPad, DropDown)
 from libqtile.command import lazy
 
 from libqtile.widget import Spacer
@@ -83,8 +83,6 @@ keys = [
 # CONTROL + ALT KEYS
 
     Key(["mod1", "control"], "o", lazy.spawn(home + '/.config/qtile/scripts/picom-toggle.sh')),
-
-# ALT + ... KEYS
 
 # CONTROL + SHIFT KEYS
 
@@ -603,3 +601,18 @@ auto_fullscreen = True
 focus_on_window_activation = "focus" # or smart
 
 wmname = "LG3D"
+
+#drop dowm terminals with R and bash
+groups.append(
+    ScratchPad("scratch", [
+            DropDown("R", "alacritty -e R -q", opacity=0.8),
+            DropDown("term", "alacritty -e bash", opacity=0.8),
+            ]),
+) 
+
+keys.append(
+  Key([mod], 'c', lazy.group['scratch'].dropdown_toggle('R')))
+
+keys.append(
+    Key([mod], 'm', lazy.group["scratch"].dropdown_toggle("term"))
+)
