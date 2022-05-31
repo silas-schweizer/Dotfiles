@@ -3,7 +3,10 @@ set drawbox
 set icons true
 set hidden true
 set ignorecase true
-
+set previewer stpv
+set cleaner stpvimgclr
+&stpvimg --listen $id
+cmd on-quit $stpvimg --end $id
 
 #commands
 
@@ -11,20 +14,19 @@ cmd open &$OPENER "$f"
 cmd execute &bash $f
 
 cmd yank-path $printf '%s' "$fx" | xclip -i -selection clipboard
-
 cmd yank-dirname $dirname -- "$f" | head -c-1 | xclip -i -selection clipboard
 
 
 #dragon
-cmd dragon %dragon-drag-and-drop -a -x $fx
-cmd dragon-stay %dragon-drag-and-drop -a $fx
-cmd dragon-individual %dragon-drag-and-drop $fx
+cmd dragon %dragon-drop -a -x $fx
+cmd dragon-stay %dragon-drop -a $fx
+cmd dragon-individual %dragon-drop $fx
 
 
 
 cmd dldragon ${{
   
-url=$(dragon-drag-and-drop -t -x)
+url=$(dragon-drop -t -x)
 
 if [ -n "$url" ]; then
   printf "File Name: "
@@ -61,6 +63,14 @@ cmd mkfile ${{
   read ans
   $EDITOR $ans
 }}
+
+cmd sudomkfile ${{
+  printf "File Name: "
+  read ans
+  sudo $EDITOR $ans
+}}
+
+cmd zip %zip -r "$f" "$f"
 
 cmd chmod ${{
   printf "Mode Bits: "
@@ -110,9 +120,10 @@ cmd newfold ${{
     mv -- $fx "$newd"
 }}
 
+# Archive bindings
 cmd unarchive ${{
   case "$f" in
-      *.zip) peazip -ext2folder "$f" ;;
+      *.zip) unar -d "$f" ;;
       *.tar.gz) tar -xzvf "$f" ;;
       *.tar.bz2) tar -xjvf "$f" ;;
       *.tar) tar -xvf "$f" ;;
@@ -122,7 +133,6 @@ cmd unarchive ${{
 
 
 #remove some defaults
-
 map m
 map o
 map n
@@ -130,42 +140,53 @@ map d
 map c
 map e
 map y
-
+map u
 
 #map keys
 
-map . set hidden!
-map au unarchive
-
 #dragon
-
 map dr dragon
 map ds dragon-stay
 map di dragon-individual
 map dl dldragon
 
+#basic stuff
+map . set hidden!
+map ua unarchive
 map sm send-as-mail
-map yf select-files
-map yd select-dirs
-map yp yank-path
-map yd yank-dirname
 map mf mkfile
 map md mkdir
 map ms newfold
 map l open
 map dd delete
 map ch chmod
-map r rename
 map x cut
 map p paste
-map u unselect
+map U unselect
 map <enter> execute
+map msf sudomkfile
+map z zip
+
 
 map <c-z> $ kill -STOP $PPID
 
+#yank files
+map yf select-files
+map yd select-dirs
+map yp yank-path
+map yd yank-dirname
+map yy copy
+
+
+# rename files
+map I push A<c-a> # at the very beginning
+map i push A<a-b><a-b><a-f> # before extension
+map a push A<a-b> # after extension
+map r rename #at the very end
+
 # Navigation
-map gk cd ~/kDrive/
-map gp cd ~/kDrive/projects
+map gp cd ~/projects
 map gd cd ~/Downloads
 map gc cd ~/.config
-map gar cd ~/kDrive/areas
+map gar cd ~/areas
+
