@@ -4,5 +4,5 @@ My settings for:
 - qtile 
 - lf
 - alacritty
-- sxhakd
+- sxhkd
 - espanso text expander
