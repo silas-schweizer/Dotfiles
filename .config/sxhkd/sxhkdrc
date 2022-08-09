@@ -5,8 +5,8 @@ alt+{t,z,r,s,q,a}
 alt + e
     vscodium
 
-alt + shift + e
-    alacritty -e nvim
+alt + n 
+    sleep .1; alacritty -e fish -c nvim
 
 # open links
 alt + {m, l, w}
@@ -24,7 +24,7 @@ super + shift + b
 	reboot
 
 #file managers
-super+shift+o
+super+p
 	pcmanfm
 	
 super+o
@@ -43,9 +43,21 @@ Print
 	flameshot gui
 
 #only thinkpad screen
-alt+ shift + m
+super+ shift + m
 	xrandr --output eDP1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP1 --off --output DP2 --off --output HDMI1 --off --output HDMI2 --off --output VIRTUAL1 --off &
 
 #big monitor
-alt+ shift + n
+super+ shift + n
 	xrandr --output eDP1 --off --output DP-1 --primary --mode 3840x2160 --scale 0.7x0.7 --pos 0x0 --rotate normal --output DP2 --off --output HDMI1 --off --output HDMI2 --off --output VIRTUAL1 --off &
+
+#send mail
+alt+shift+s
+	mailspring mailto: -b
+
+#bluetooth 
+super+b
+	rfkill unblock bluetooth; blueman-manager
+
+
+
+
