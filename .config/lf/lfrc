@@ -22,6 +22,12 @@ cmd dragon %dragon-drop -a -x $fx
 cmd dragon-stay %dragon-drop -a $fx
 cmd dragon-individual %dragon-drop $fx
 
+cmd select-files ${{
+  typeset -a files; files=( ${(@f)"$(fd . -L -d1 -tf)"} )
+  for fi in "${files[@]}"; do
+    lf -remote "send $id toggle $fi"
+  done
+}}
 
 
 cmd dldragon ${{
@@ -52,6 +58,41 @@ else
   exit 1
 fi
 }}
+
+#broot jump
+cmd broot_jump ${{
+  f=$(mktemp)
+  res="$(broot --outcmd $f && cat $f | sed 's/cd //')"
+  rm -f "$f"
+  if [ -f "$res" ]; then
+    cmd="select"
+  elif [ -d "$res" ]; then
+    cmd="cd"
+  fi
+  lf -remote "send $id $cmd \"$res\""
+}}
+
+# append before ext
+cmd rename-before-ext &{{
+	if [ "$(echo "$fx" | wc -l)" -gt 1 ]; then
+		lf -remote "send $id echo You can't change more than one file name"
+		lf -remote "send $id unselect"
+	else
+		if [ -d "$f" ]; then
+			lf -remote "send $id rename"
+		else
+			ext_len="$(echo ${f##*.} | wc -m)" # extention length
+			for i in $(seq "$ext_len"); do
+				pos="${pos}<left>"
+			done
+			lf -remote "send $id rename"
+			lf -remote "send $id push "$pos""
+		fi
+	fi
+}}
+
+
+
 
 
 cmd send-as-mail ${{
@@ -170,23 +211,27 @@ map z zip
 
 map <c-z> $ kill -STOP $PPID
 
-#yank files
-map yf select-files
-map yd select-dirs
+#select and yank files
+map Sf select-files
+map Sd select-dirs
 map yp yank-path
 map yd yank-dirname
 map yy copy
 
+#select all files
 
 # rename files
-map I push A<c-a> # at the very beginning
-map i push A<a-b><a-b><a-f> # before extension
-map a push A<a-b> # after extension
 map r rename #at the very end
+map i push A<a-b><a-b><a-f>
+map a rename-before-ext
+
 
 # Navigation
+
+map / broot_jump
 map gp cd ~/projects
 map gd cd ~/Downloads
 map gc cd ~/.config
-map gar cd ~/areas
-
+map ga cd ~/areas
+map gr cd ~/resources
+map gar cd ~/archives
