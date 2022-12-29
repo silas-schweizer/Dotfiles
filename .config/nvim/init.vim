@@ -32,7 +32,7 @@ map <leader>g :Goyo \| set bg=light \| set linebreak<CR>
 map <leader>o :setlocal spell! spelllang=en_us<CR>
 " Splits open at the bottom and right, which is non-retarded, unlike vim defaults.
 set splitbelow splitright
-#filetype for calcurse
+" filetype for calcurse
 autocmd BufRead,BufNewFile /tmp/calcurse*,~/.calcurse/notes/* set filetype=markdown
 " Have j and k navigate visual lines rather than logical ones
 nmap j gj
