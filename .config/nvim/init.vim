@@ -32,8 +32,6 @@ map <leader>g :Goyo \| set bg=light \| set linebreak<CR>
 map <leader>o :setlocal spell! spelllang=en_us<CR>
 " Splits open at the bottom and right, which is non-retarded, unlike vim defaults.
 set splitbelow splitright
-" filetype for calcurse
-autocmd BufRead,BufNewFile /tmp/calcurse*,~/.calcurse/notes/* set filetype=markdown
 " Have j and k navigate visual lines rather than logical ones
 nmap j gj
 nmap k gk
@@ -252,9 +250,13 @@ nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 " language tool:
 :let g:languagetool_server_jar='/home/silas/LanguageTool-5.2/languagetool-server.jar'
 
+" Enable Goyo by default for mutt writing
+	autocmd BufRead,BufNewFile /tmp/neomutt* let g:goyo_width=80
+	autocmd BufRead,BufNewFile /tmp/neomutt* :Goyo | set bg=light
+	autocmd BufRead,BufNewFile /tmp/neomutt* map ZZ :Goyo\|x!<CR>
+	autocmd BufRead,BufNewFile /tmp/neomutt* map ZQ :Goyo\|q!<CR>
 
 " powerline fonts
-
 if !exists('g:airline_symbols')
         let g:airline_symbols = {}
     endif
@@ -289,14 +291,29 @@ let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = '☰'
 let g:airline_symbols.maxlinenr = ''
 
+" limelight
+autocmd! User GoyoEnter Limelight
+autocmd! User GoyoLeave Limelight!
+" Color name (:help cterm-colors) or ANSI code
+let g:limelight_conceal_ctermfg = 'gray'
+let g:limelight_conceal_ctermfg = 240
 
+" Color name (:help gui-colors) or RGB color
+let g:limelight_conceal_guifg = 'DarkGray'
+let g:limelight_conceal_guifg = '#777777'
 
+" Default: 0.5
+let g:limelight_default_coefficient = 0.7
 
+" Number of preceding/following paragraphs to include (default: 0)
+let g:limelight_paragraph_span = 1
 
+" Beginning/end of paragraph
+"   When there's no empty line between the paragraphs
+"   and each paragraph starts with indentation
+let g:limelight_bop = '^\s'
+let g:limelight_eop = '\ze\n^\s'
 
-
-
-
-
-
-
+" Highlighting priority (default: 10)
+"   Set it to -1 not to overrule hlsearch
+let g:limelight_priority = -1

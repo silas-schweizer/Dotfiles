@@ -7,25 +7,21 @@ function run {
   fi
 }
 
-
-
 #starting utility applications at boot time
 run nm-applet &
-run pamac-tray &
 numlockx on &
 blueman-applet &
 flameshot & 
-picom --config .config/picom/picom-blur.conf --experimental-backends &
+picom --experimental-backends -b & 
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 dunst &
 feh --randomize --bg-fill /usr/share/wallpapers/garuda-wallpapers/* &
 #starting user applications at boot time
-run volumeicon &
 setxkbmap -option caps:swapescape &
+run volumeicon &
 espanso daemon &
 copyq &
 sxhkd &
 ulauncher --hide-window &
-gummy start &
-#nitrogen --random --set-zoom-fill &
-
+gammy &
+/home/silas/Applications/pcloud_ddba8da18ded3ec466b4f60464b1b922 &
