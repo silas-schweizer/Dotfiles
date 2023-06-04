@@ -1,16 +1,25 @@
 #open programs
 alt+{t,z,r,s,q,a}
-	{zettlr, zotero, rstudio-bin, subl, mailspring, signal-desktop}
+	{zettlr, zotero, rstudio, subl, mailspring, signal-desktop}
 #editors
 alt + e
     vscodium
 
 alt + n 
     sleep .1; alacritty -e fish -c nvim
+#email
+
+alt + i
+	mbsync -a &
+	alacritty -e neomutt
+
+#calendar
+alt + c
+	alacritty -e calcurse
 
 # open links
-alt + {m, l, w}
-		brave {https://moodle-app2.let.ethz.ch/my/, https://www.leo.org/german-english, https://www.duden.de/}
+alt + {m, l, w, d}
+		brave {https://moodle-app2.let.ethz.ch/my/, https://www.leo.org/german-english, dhttps://www.duden.de/,https://www.deepl.com/translator}
 
 #open obsidian
 alt + o
@@ -28,7 +37,7 @@ super+p
 	pcmanfm
 	
 super+o
-	alacritty -e lf
+	alacritty -e lfrun
 
 #terminal
 super+enter
