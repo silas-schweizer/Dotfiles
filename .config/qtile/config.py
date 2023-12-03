@@ -1,6 +1,4 @@
 # Copyright (c) 2010 Aldo Cortesi
-# Copyright (c) 2010, 2014 dequis
-# Copyright (c) 2012 Randall Ma
 # Copyright (c) 2012-2014 Tycho Andersen
 # Copyright (c) 2012 Craig Barnes
 # Copyright (c) 2013 horsik
@@ -24,7 +22,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
 import os
 import re
 import socket
@@ -33,8 +30,8 @@ from typing import List  # noqa: F401
 from libqtile import layout, bar, widget, hook, qtile
 from libqtile.config import (Click, Drag, Group, Key, Match, Screen, Rule, ScratchPad, DropDown)
 from libqtile.command import lazy
-
-from libqtile.widget import Spacer
+from qtile_extras import widget
+from qtile_extras.widget.decorations import PowerLineDecoration, RectDecoration
 
 #mod4 or mod = super key
 mod = "mod4"
@@ -69,7 +66,7 @@ keys = [
     Key([mod], "d", lazy.spawn('nwggrid -p -o 0.4')),
     Key([mod], "Escape", lazy.spawn('xkill')),
     Key([mod], "Return", lazy.spawn(myTerm)),
-    Key([mod], "KP_Enter", lazy.spawn('alacritty')),
+    Key([mod], "KP_Enter", lazy.spawn(myTerm)),
     Key([mod], "x", lazy.shutdown()),
 
 # SUPER + SHIFT KEYS
@@ -82,15 +79,13 @@ keys = [
 
 # CONTROL + ALT KEYS
 
-    Key(["mod1", "control"], "o", lazy.spawn(home + '/.config/qtile/scripts/picom-toggle.sh')),
+#Key(["mod1", "control"], "o", lazy.spawn(home + '/.config/qtile/scripts/picom-toggle.sh')),
 
 # CONTROL + SHIFT KEYS
 
     Key([mod2, "shift"], "Escape", lazy.spawn('lxtask')),
 
-
 # SCREENSHOTS
-
     Key([], "Print", lazy.spawn("flameshot gui")),
     Key([mod2], "Print", lazy.spawn('flameshot full -p ' + home + '/Pictures')),
 
@@ -189,15 +184,14 @@ keys = [
 groups = []
 
 # FOR QWERTY KEYBOARDS
-group_names = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0",]
-
+group_names = ["1", "2", "3", "4", "5", "6"]
 # group_labels = ["1 ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ", "8 ", "9 ", "0",]
-group_labels = ["α", "β", "γ", "obsidian", "mail", "signal", "spotify", "ε", "η", "θ",]
+group_labels = ["α", "β", "obsidian", "zotero", "mail", "signal"]
 # symbols:
 #group_labels = ["", "", "", "", "","6", "7", "8", "9", "0", "10", ]
 #group_labels = ["Web", "Edit/chat", "Image", "Gimp", "Meld", "Video", "Vb", "Files", "Mail", "Music",]
 
-group_layouts = ["monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall",]
+group_layouts = ["monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall"]
 
 for i in range(len(group_names)):
     groups.append(
@@ -250,8 +244,6 @@ layouts = [
     ]
 
 # COLORS FOR THE BAR
-
-
 def init_colors():
     return [["#2F343F", "#2F343F"], # color 0
             ["#2F343F", "#2F343F"], # color 1
@@ -280,6 +272,12 @@ def init_colors():
 
 colors = init_colors()
 
+#init powerline
+powerline = {
+    "decorations": [
+        PowerLineDecoration()
+    ]}
+
 def base(fg='text', bg='dark'):
     return {'foreground': colors[14],'background': colors[15]}
 
@@ -302,15 +300,16 @@ def init_widgets_list():
                         linewidth = 1,
                         padding = 10,
                         foreground = colors[15],
-                        background = colors[15]
+                        background = colors[15] 
                         ),              #
-               widget.Image(
-                       filename = "~/.config/qtile/icons/garuda-red.png",
-                       iconsize = 9,
-                       background = colors[15],
-                       mouse_callbacks = {'Button1': lambda : qtile.cmd_spawn('jgmenu_run')}
-                       ),
-               widget.GroupBox(
+               # widget.Image(
+               #       filename = "~/.config/qtile/icons/garuda-red.png",
+               #        iconsize = 9,
+               #        background = colors[15],
+               #        mouse_callbacks = {'Button1': lambda : qtile.cmd_spawn('jgmenu_run')}
+               #        ),
+
+                widget.GroupBox(
 
             **base(bg=colors[15]),
             font='UbuntuMono Nerd Font',
@@ -332,11 +331,9 @@ def init_widgets_list():
             this_screen_border=colors[17],
             other_current_screen_border=colors[13],
             other_screen_border=colors[17],
-            disable_drag=True
+            disable_drag=True,
+            **powerline),
 
-
-                   
-                        ),
                 widget.TaskList(
                     highlight_method = 'border', # or block
                     icon_size=17,
@@ -351,9 +348,10 @@ def init_widgets_list():
                     margin=2,
                     txt_floating='🗗',
                     txt_minimized='>_ ',
-                    borderwidth = 1,
-                    background=colors[20],
+                    borderwidth = 1.5,
+                    background=colors[20], 
                     #unfocused_border = 'border'
+                    **powerline
                 ),
 
                widget.CurrentLayoutIcon(
@@ -368,20 +366,20 @@ def init_widgets_list():
                       font = "Noto Sans Bold",
                       fontsize = 12,
                       foreground = colors[5],
-                      background = colors[3]
+                      background = colors[3],
+                      **powerline
                         ),
 
-
-                widget.Net(
-                         font="Noto Sans",
-                         fontsize=12,
-                        # Here enter your network name
-                         interface=["wlp6s0"],
-                         format = '{down} ↓↑ {up}',
+               widget.Wlan(
+                 format='{essid} {percent:2.0%}',
+                         interface='wlp58s0',
                          foreground=colors[5],
                          background=colors[19],
-                         padding = 0,
-                         ),
+                         fontsize=12,
+                         font="Noto Sans Bold",
+                         update_interval=30,
+                        **powerline
+                        ), 
 
                 widget.CPU(
                         font="Noto Sans",
@@ -391,6 +389,7 @@ def init_widgets_list():
                         foreground = colors[5],
                         background = colors[22],
                         mouse_callbacks = {'Button1': lambda : qtile.cmd_spawn(myTerm + ' -e htop')},
+                        **powerline
                        ),
 
                widget.Memory(
@@ -402,6 +401,7 @@ def init_widgets_list():
                         foreground = colors[5],
                         background = colors[16],
                         mouse_callbacks = {'Button1': lambda : qtile.cmd_spawn(myTerm + ' -e htop')},
+                        **powerline
                        ),
 
                widget.Clock(
@@ -409,17 +409,19 @@ def init_widgets_list():
                         background = colors[23],
                         fontsize = 12,
                         format="%H:%M %d.%m.%Y",
+                        **powerline
                         ),
                 widget.Battery(
                         fontsize = 12,
                         background = colors[4],
                         foreground = colors[9],
-                        format = '{char} {percent:2.0%} {hour:d}:{min:02d}',
+                        format = '{char} {percent:2.0%} {hour:d}:{min:02d}',**powerline
                         ),
                 widget.Volume(
                         fontsize=12,
                         background = colors[6],
                         foreground = colors[1],
+                        **powerline
                         ),
 
                widget.Systray(
@@ -446,8 +448,8 @@ widgets_screen2 = init_widgets_screen2()
 
 
 def init_screens():
-    return [Screen(bottom=bar.Bar(widgets=init_widgets_screen1(), size=20, opacity=0.85, background= "000000")),
-            Screen(bottom=bar.Bar(widgets=init_widgets_screen2(), size=20, opacity=0.85, background= "000000"))]
+    return [Screen(top=bar.Bar(widgets=init_widgets_screen1(), size=23, opacity=1, background= "000000")),
+            Screen(bottom=bar.Bar(widgets=init_widgets_screen2(), size=20, opacity=1, background= "000000"))]
 screens = init_screens()
 
 
@@ -476,14 +478,10 @@ def assign_app_group(client):
 #     #########################################################
      d["1"] = []
      d["2"] = []
-     d["3"] = []
-     d["4"] = ["obsidian"]
-     d["5"] = ["mailspring"]
+     d["3"] = ["obsidian", "Obsidian"]
+     d["4"] = ["zotero", "Zotero"]
+     d["5"] = ["mailspring", "Mailspring"]
      d["6"] = ["signal-desktop", "Signal-Desktop", "signal"]
-     d["7"] = ["spotify, Spotify"]
-     d["8"] = []
-     d["9"] = []
-     d["0"] = []
 #     ##########################################################
      wm_class = client.window.get_wm_class()[0]
 
@@ -548,6 +546,8 @@ floating_layout = layout.Floating(float_rules=[
     Match(wm_class='Yad'),
     Match(wm_class='Cairo-dock'),
     Match(wm_class='cairo-dock'),
+    Match(wm_class='0x75cb339 "Solver"'),
+    Match(title='Quick Format Citation'),
 
 
 ],  fullscreen_border_width = 0, border_width = 0)
