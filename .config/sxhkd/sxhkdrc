@@ -1,6 +1,6 @@
 #open programs
-alt+{t,z,r,s,q,a}
-	{zettlr, zotero, rstudio, subl, mailspring, signal-desktop}
+alt+{t,z,r,q,a}
+	{zettlr, zotero, rstudio, mailspring --password-store="gnome-libsecret", signal-desktop}
 #editors
 alt + e
     vscodium

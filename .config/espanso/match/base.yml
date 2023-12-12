@@ -19,6 +19,10 @@ matches:
   - trigger: "!sh"
     replace: "#!/bin/bash"
     word: true
+  - trigger: "zzt"
+    replace: |
+      \usepackage[backend=bibtex,style=verbose-trad2]{biblatex}
+      \bibliography{/home/silas/resources/My_Library}
 
 
 # greetings and stuff
@@ -80,6 +84,7 @@ matches:
   - trigger: arent
     replace: "aren't"
     propagate_case: true
+    word: true
   - trigger: didnt
     replace: "didn't"
   - trigger: wasnt
@@ -96,10 +101,11 @@ matches:
         type: date
         params:
           format: "%d.%m.%Y"
-  - trigger: tz
+  - trigger: tz;
     replace: " - trigger: \"$|$;\"\n replace: \"\""
+    word: true
   - trigger: "ttime"
-    replace: "It's {{mytime}}"
+    replace: "{{mytime}}"
     vars:
       - name: mytime
         type: date
