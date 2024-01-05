@@ -1,15 +1,16 @@
+set ratios 1:2:3
 set shell bash
 set drawbox
 set icons true
 set hidden true
 set ignorecase true
-set previewer stpv
-set cleaner stpvimgclr
-&stpvimg --listen $id
-cmd on-quit $stpvimg --end $id
+
+#preview
+set previewer lfpreviewer
+set cleaner lfcleaner
+set preview
 
 #commands
-
 cmd open &$OPENER "$f"
 cmd execute &bash $f
 
@@ -91,9 +92,32 @@ cmd rename-before-ext &{{
 	fi
 }}
 
+cmd open_with %"$@" "$fx"
+map ` push :open-with<space>
 
-
-
+cmd bulk_rename ${{
+    old="$(mktemp)"
+    new="$(mktemp)"
+    if [ -n "$fs" ]; then
+        fs="$(basename -a $fs)"
+    else
+        fs="$(ls)"
+    fi
+    printf '%s\n' "$fs" >"$old"
+    printf '%s\n' "$fs" >"$new"
+    $EDITOR "$new"
+    [ "$(wc -l < "$new")" -ne "$(wc -l < "$old")" ] && exit
+    paste "$old" "$new" | while IFS= read -r names; do
+        src="$(printf '%s' "$names" | cut -f1)"
+        dst="$(printf '%s' "$names" | cut -f2)"
+        if [ "$src" = "$dst" ] || [ -e "$dst" ]; then
+            continue
+        fi
+        mv -- "$src" "$dst"
+    done
+    rm -- "$old" "$new"
+    lf -remote "send $id unselect"
+}}
 
 cmd send-as-mail ${{
   mailspring $f 
@@ -173,6 +197,12 @@ cmd unarchive ${{
 }}
 
 
+#send pdf to remarkable
+
+cmd send_to_remarkable ${{ bash ~/.config/lf/send_2_remarkable.sh "$f" }}
+
+map sr send_to_remarkable
+ 
 #remove some defaults
 map m
 map o
@@ -207,7 +237,7 @@ map U unselect
 map <enter> execute
 map msf sudomkfile
 map z zip
-
+map L open_with
 
 map <c-z> $ kill -STOP $PPID
 
@@ -220,11 +250,14 @@ map yy copy
 
 #select all files
 
+map sf sort_by_extension
+
 # rename files
 map r rename #at the very end
 map i push A<a-b><a-b><a-f>
 map a rename-before-ext
 
+map b bulk_rename
 
 # Navigation
 
