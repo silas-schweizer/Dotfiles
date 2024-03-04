@@ -13,10 +13,8 @@ set preview
 #commands
 cmd open &$OPENER "$f"
 cmd execute &bash $f
-
 cmd yank-path $printf '%s' "$fx" | xclip -i -selection clipboard
 cmd yank-dirname $dirname -- "$f" | head -c-1 | xclip -i -selection clipboard
-
 
 #dragon
 cmd dragon %dragon-drop -a -x $fx
@@ -72,33 +70,6 @@ cmd broot_jump ${{
   fi
   lf -remote "send $id $cmd \"$res\""
 }}
-
-# append before ext
-rename_before_ext() {
-    # Check if no file is selected
-    if [ -z "$fx" ]; then
-        lf -remote "send $id echo 'No file selected'"
-        return
-    fi
-
-    # Loop through each selected file
-    echo "$fx" | while IFS= read -r f; do
-        if [ -d "$f" ]; then
-            # Skip directories
-            continue
-        else
-            # Extract file extension
-            ext="${f##*.}"
-            # Calculate the length of the extension plus the dot
-            ext_len=$(( ${#ext} + 1 ))
-            # Prepare the cursor movement command to position before the extension
-            pos=$(printf '<left>%.0s' $(seq 1 $ext_len))
-            # Trigger rename action and position the cursor
-            lf -remote "send $id rename"
-            lf -remote "send $id push \"$pos\""
-        fi
-    done
-}
 
 cmd open_with %"$@" "$fx"
 map ` push :open-with<space>
@@ -204,8 +175,6 @@ cmd unarchive ${{
   esac
 }}
 
-
-
 # send file to archive
 cmd send_archive ${{
     if [ -z "$fx" ]; then
@@ -217,10 +186,8 @@ cmd send_archive ${{
 }}
 
 #send pdf to remarkable
-
 cmd send_to_remarkable ${{ bash ~/.config/lf/send_2_remarkable.sh "$f" }}
 
- 
 #remove some defaults
 map m
 map o
@@ -230,8 +197,6 @@ map c
 map e
 map y
 map u
-
-#map keys
 
 #dragon
 map dr dragon
@@ -246,6 +211,7 @@ map sm send-as-mail
 map mf mkfile
 map md mkdir
 map ms newfold
+
 map l open
 map dd delete
 map ch chmod
@@ -262,6 +228,7 @@ map <c-z> $ kill -STOP $PPID
 #select and yank files
 map Sf select-files
 map Sd select-dirs
+
 map yp yank-path
 map yd yank-dirname
 map yy copy
@@ -270,19 +237,13 @@ map yy copy
 map sa send_archive
 map sr send_to_remarkable
 
-
-#select all files
-
-
 # rename files
 map r rename #at the very end
 map i push A<a-b><a-b><a-f>
 map a rename-before-ext
-
 map b bulk_rename
 
 # Navigation
-
 map / broot_jump
 map gp cd ~/projects
 map gd cd ~/Downloads
